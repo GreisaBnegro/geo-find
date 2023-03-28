@@ -12,9 +12,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const mapContainer = document.getElementById("map-container");
     const latviaMap = document.getElementById("latvia-map");
     const scoreElement = document.getElementById("score");
+    const totalCountElement = document.getElementById("totalCount")
 
 
     let score = 0;
+    let totalCount = 0;
     let randomCity;
     generateRandomCity();
 
@@ -29,34 +31,38 @@ document.addEventListener("DOMContentLoaded", function () {
         cityDot.style.left = `${city.x * 100}%`;
         cityDot.style.top = `${city.y * 100}%`;
 
-        cityDot.addEventListener("click", handleClickEvent(city));
+        cityDot.addEventListener("click", handleClickEvent(city, cityDot));
 
         mapContainer.appendChild(cityDot);
     });
 
-    function handleClickEvent(city) {
-        // alert(`You guessed: ${city.name}`);
-        if (city.id === randomCity.id) {
-            score++;
-            removeCityFromListAndUpdateIds();
-            removeDot(cityDot);
-            if (cities.length !== 0) {
-                generateRandomCity()
-                refreshGuessingCity();
-            } else {
-                refreshGuessingCity("You won!");
+    function handleClickEvent(city, cityDot) {
+        return function () {
+            // alert(`You guessed: ${city.name}`);
+            totalCount++;
+            if (city.id === randomCity.id) {
+                score++;
+                removeCityFromList();
+                removeDot(city, cityDot);
+                if (cities.length !== 0) {
+                    generateRandomCity()
+                    refreshGuessingCity();
+                } else {
+                    refreshGuessingCity("You won!");
+                }
             }
+            console.log(cities);
+            scoreElement.textContent = score;
+            totalCountElement.textContent = totalCount;
         }
-        console.log(cities);
-        scoreElement.textContent = score;
     }
 
-    function removeDot(dot) {
-        dot.removeEventListener("click", handleClickEvent);
-        dot.remove();
+    function removeDot(city, cityDot) {
+        cityDot.removeEventListener("click", handleClickEvent(city, cityDot));
+        cityDot.remove();
     }
 
-    function removeCityFromListAndUpdateIds() {
+    function removeCityFromList() {
         removeItemOnce(cities, randomCity);
     }
 
